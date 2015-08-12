@@ -29,6 +29,9 @@
 #include "GPIO.h"
 #include "LIN_Driver.h"
 
+#define TIME_TOGGLING         200
+#define ZERO_MILLISEC         0
+
 
 /* Functions macros, constants, types and datas         */
 /* ---------------------------------------------------- */
@@ -94,7 +97,7 @@
  **************************************************************/
 void LED (void)
 {
-	static T_UBYTE lub_ToggleCounter=0; 
+	static T_UBYTE lub_ToggleCounter=ZERO_MILLISEC; 
 	T_UBYTE lub_Comand=GetLinData();
 	static T_UBYTE lub_LedState=cmd_NONE;
 	switch (lub_LedState)
@@ -113,10 +116,10 @@ void LED (void)
 	 	case cmd_LED_toggling:
 	 					lub_LedState=lub_Comand;
 	 					lub_ToggleCounter++;
-	 					if(lub_ToggleCounter >= 167)
+	 					if(lub_ToggleCounter >= TIME_TOGGLING)
 	 					{
 	 						LED_TOGGLE(LED1);
-	 						lub_ToggleCounter=0;
+	 						lub_ToggleCounter=ZERO_MILLISEC;
 	 					}
 						break;
 	 	case cmd_disable_slv:

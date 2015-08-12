@@ -68,6 +68,13 @@ T_UBYTE rub_Data_Rx=0;
 #define LINFLEX0_TX_Vector 	80
 #define LINFLEX0_ERR_Vector 81
 #define PRIORITY10		    10
+#define MASTER_CMD_ALL      0x0F
+#define MASTER_CMD_SLV3     0x12
+#define SLAVE3_RSP          0x22
+#define SLAVE3_ID           0x32
+#define RECEIVED            1
+#define NOT_RECEIVED        0
+
 
 /* Private functions prototypes */
 /* ---------------------------- */
@@ -118,16 +125,16 @@ void initPeriClkGen(void)
 void Intc_LINFLEX_Rx(void)
 { 
 /*If slave linflex 0 receives data*/
-	if(LINFLEX_0.LINSR.B.RMB == 1)
+	if(LINFLEX_0.LINSR.B.RMB == RECEIVED)
 	{
-		LINFLEX_0.LINSR.B.RMB=0;
+		LINFLEX_0.LINSR.B.RMB=NOT_RECEIVED;
 	}
 	
-	if((LINFLEX_0.BIDR.B.ID == 0x0F) || (LINFLEX_0.BIDR.B.ID == 0x12))
+	if((LINFLEX_0.BIDR.B.ID == MASTER_CMD_ALL) || (LINFLEX_0.BIDR.B.ID == MASTER_CMD_SLV3))
 	{
 		rub_Data_Rx=(T_UBYTE) LINFLEX_0.BDRL.B.DATA0;
 	}
-	else if((LINFLEX_0.BIDR.B.ID == 0x22) || (LINFLEX_0.BIDR.B.ID == 0x32))
+	else if((LINFLEX_0.BIDR.B.ID == SLAVE3_RSP) || (LINFLEX_0.BIDR.B.ID == SLAVE3_ID))
 	{
 		
 	}
@@ -179,11 +186,11 @@ void Intc_LINFLEX_Tx(void)
 		LINFLEX_0.LINSR.B.RMB=0;
 	}
 	
-	if((LINFLEX_0.BIDR.B.ID == 0x21) || (LINFLEX_0.BIDR.B.ID == 0x31))
+	if((LINFLEX_0.BIDR.B.ID == SLAVE3_RSP) || (LINFLEX_0.BIDR.B.ID == SLAVE3_ID))
 	{
 		
 	}
-	else if((LINFLEX_0.BIDR.B.ID == 0x0F) || (LINFLEX_0.BIDR.B.ID == 0x11))
+	else if((LINFLEX_0.BIDR.B.ID == MASTER_CMD_ALL) || (LINFLEX_0.BIDR.B.ID == MASTER_CMD_SLV3))
 	{
 		
 	}
@@ -387,7 +394,7 @@ void initLINFlex_0 (T_ULONG lul_BaudRate)
 
 
 
- void	IntcInterruptLINFLEXHandlers(void)
+ void IntcInterruptLINFLEXHandlers(void)
  {
   
   /* Configure options of the INTC */
